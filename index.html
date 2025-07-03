@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AirGuard ChatBot</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
+    #chat { max-width: 600px; margin: auto; border: 1px solid #ccc; padding: 10px; background: white; }
+    .mensaje { margin: 10px 0; }
+    .bot { color: green; }
+    .user { font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <div id="chat">
+    <h2>AirGuard ChatBot 🤖</h2>
+    <div id="messages"></div>
+
+    <input type="text" id="inputMensaje" placeholder="Escribe tu pregunta..." style="width: 80%;" />
+    <button onclick="enviarMensaje()">Enviar</button>
+  </div>
+
+  <script>
+    async function enviarMensaje() {
+      const input = document.getElementById('inputMensaje');
+      const mensaje = input.value.trim();
+      if (!mensaje) return;
+
+      agregarMensaje('user', mensaje);
+
+      const respuesta = await fetch('/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mensaje })
+      })
+      .then(res => res.json())
+      .catch(() => ({ respuesta: [{ titulo: '', contenido: 'Error al conectar con el bot 😥' }] }));
+
+      if (Array.isArray(respuesta.respuesta)) {
+        respuesta.respuesta.forEach(r => {
+          agregarMensaje('bot', `<strong>${r.titulo}</strong><br>${r.contenido}`);
+        });
+      } else {
+        agregarMensaje('bot', respuesta.respuesta);
+      }
+
+      input.value = '';
+    }
+
+    function agregarMensaje(tipo, texto) {
+      const div = document.createElement('div');
+      div.className = 'mensaje ' + tipo;
+      div.innerHTML = texto;
+      document.getElementById('messages').appendChild(div);
+    }
+  </script>
+
+</body>
+</html>
