@@ -42,7 +42,6 @@ function expandirConSinonimos(palabras) {
   return [...new Set(expandidas)];
 }
 
-// Ejemplo función que usas en tu pipeline para buscar
 function buscarRespuesta(mensaje, baseDatos) {
   const palabrasClave = extraerPalabrasClave(mensaje);
   const palabrasExpandidas = expandirConSinonimos(palabrasClave);
